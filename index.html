@@ -17,6 +17,11 @@ window.AFTER_SRC="data:image/jpeg;base64,/9j/4QEfRXhpZgAATU0AKgAAAAgABQEAAAMAAAA
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script type="text/babel">
 
+
+
+
+
+
 (function(){
 var useState=React.useState, useCallback=React.useCallback, createElement=React.createElement;
 
@@ -25,7 +30,8 @@ var SUPA_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJl
 var TABLE="imjang_applicants";
 var ADMIN_PW="0000";
 var KAKAO="https://open.kakao.com/me/rich_love";
-var ACCT="우리은행 18438606202001 손윤주";
+var ACCT="우리 1002030508460 손윤주";
+var COPY_ACCT="1002030508460";
 var GA="#b5863a";
 
 function hdrs(){return{"Content-Type":"application/json","apikey":SUPA_ANON,"Authorization":"Bearer "+SUPA_ANON};}
@@ -34,9 +40,8 @@ function dbSelect(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?order=created_at.d
 function dbCount(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?select=count",{headers:Object.assign({},hdrs(),{"Prefer":"count=exact","Range-Unit":"items","Range":"0-0"})}).then(function(r){return parseInt((r.headers.get("content-range")||"0/0").split("/")[1]||"0");});}
 
 var DATES=[
-  {id:"weekday_evening",date:"5월 19일(화)",time:"오후 7시 ~ 10시",badge:"저녁 임장",acc:"#b5863a"},
-  {id:"weekend_afternoon",date:"5월 23일(토)",time:"오후 2시 ~ 5시",badge:"낮 임장",acc:"#3a7c6f"},
-  {id:"weekend_evening",date:"5월 23일(토)",time:"오후 6시 ~ 9시",badge:"저녁 임장",acc:"#6a4a9a"}
+  {id:"afternoon",date:"6월 13일(토)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#3a7c6f",kakao:"https://open.kakao.com/o/gJdZPKxi"},
+  {id:"evening",date:"6월 13일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/gmHYTKxi"}
 ];
 var AREAS=["신당8구역","신당9구역","신당10구역","신당13구역","전체 비교","미정"];
 var BUDGETS=["5천만원 미만","5천~1억","1억~3억","3억~5억","5억~10억","10억 이상"];
@@ -178,6 +183,12 @@ function App(){
   var s14=useState(""),search=s14[0],setSearch=s14[1];
   var s15=useState("all"),filt=s15[0],setFilt=s15[1];
   var s16=useState({d:"",nick:"",phone:"",area:"",age:"",budget:"",region:"",price:"",agree:false}),form=s16[0],setForm=s16[1];
+  var s17=useState(""),myPhone=s17[0],setMyPhone=s17[1];var s18=useState([]),myRows=s18[0],setMyRows=s18[1];var s19=useState(false),myLoading=s19[0],setMyLoading=s19[1];var s20=useState(""),myErr=s20[0],setMyErr=s20[1];var s21=useState(""),myMsg=s21[0],setMyMsg=s21[1];
+  var s17=useState(""),myPhone=s17[0],setMyPhone=s17[1];
+  var s18=useState([]),myRows=s18[0],setMyRows=s18[1];
+  var s19=useState(false),myLoading=s19[0],setMyLoading=s19[1];
+  var s20=useState(""),myErr=s20[0],setMyErr=s20[1];
+  var s21=useState(""),myMsg=s21[0],setMyMsg=s21[1];
 
   function set(k,v){setForm(function(f){var n=Object.assign({},f);n[k]=v;return n;});}
   var sel=DATES.find(function(x){return x.id===form.d;});
@@ -187,7 +198,7 @@ function App(){
     if(!form.d||!form.nick||!form.phone||!form.area||!form.age||!form.budget||!form.region||!form.price||!form.agree){setErr("모든 항목을 입력하고 동의를 체크해주세요.");return;}
     if(!/^01[0-9]{8,9}$/.test(form.phone.replace(/[^0-9]/g,""))){setErr("올바른 전화번호를 입력해주세요.");return;}
     setSaving(true);
-    dbInsert({selected_date:form.d,nickname:form.nick,phone:form.phone.replace(/[^0-9]/g,""),age_group:form.age,area:form.area,budget:form.budget,residence:form.region,price_range:form.price,agreed:form.agree}).then(function(){setDone(true);setSaving(false);}).catch(function(e){setErr("저장 실패: "+e.message);setSaving(false);});
+    dbInsert({selected_date:form.d,nickname:form.nick,phone:form.phone.replace(/[^0-9]/g,""),age_group:form.age,area:form.area,budget:form.budget,residence:form.region,price_range:form.price,agreed:form.agree,status:"active",apply_year:new Date().getFullYear()}).catch(function(){return dbInsert({selected_date:form.d,nickname:form.nick,phone:form.phone.replace(/[^0-9]/g,""),age_group:form.age,area:form.area,budget:form.budget,residence:form.region,price_range:form.price,agreed:form.agree});}).then(function(){setDone(true);setSaving(false);}).catch(function(e){setErr("저장 실패: "+e.message);setSaving(false);});
   }
 
   function openAdmin(){if(authed){setTab("admin");load();}else setShowPw(true);}
@@ -198,7 +209,11 @@ function App(){
     Promise.all([dbSelect(),dbCount()]).then(function(res){setRows(res[0]);setTotal(res[1]);setLoading(false);}).catch(function(e){setAErr("로드 실패: "+e.message);setLoading(false);});
   },[]);
 
-  function copyAcct(){navigator.clipboard&&navigator.clipboard.writeText(ACCT).then(function(){setCopied(true);setTimeout(function(){setCopied(false);},2000);});}
+  function copyAcct(){
+    var txt="1002030508460";
+    if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){setCopied(true);setTimeout(function(){setCopied(false);},2000);}).catch(function(){var el=document.createElement("textarea");el.value=txt;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(function(){setCopied(false);},2000);});}
+    else{var el=document.createElement("textarea");el.value=txt;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(function(){setCopied(false);},2000);}
+  }
 
   var filtered=rows.filter(function(r){return filt==="all"||r.selected_date===filt;}).filter(function(r){return !search||r.nickname&&r.nickname.includes(search)||r.area&&r.area.includes(search)||r.phone&&r.phone.includes(search);});
   var dCnt={};DATES.forEach(function(d){dCnt[d.id]=rows.filter(function(r){return r.selected_date===d.id;}).length;});
@@ -239,6 +254,7 @@ function App(){
         React.createElement("div",{style:{display:"flex",borderBottom:"1.5px solid #efe8d8"}},
           React.createElement("button",{style:tabSt("notice"),onClick:function(){setTab("notice");}},"📋 공지사항"),
           React.createElement("button",{style:tabSt("form"),onClick:function(){setTab("form");}},"✍️ 참가신청"),
+          React.createElement("button",{style:tabSt("mypage"),onClick:function(){setTab("mypage");}},"📋 내 신청"),
           React.createElement("button",{style:tabSt("admin"),onClick:openAdmin},"🔐 신청현황")
         )
       )
@@ -369,10 +385,47 @@ function App(){
             React.createElement("div",null,"📌 입금자명: ",React.createElement("strong",null,form.nick))
           )
         ),
-        React.createElement("a",{href:KAKAO,target:"_blank",rel:"noopener noreferrer"},React.createElement("button",{style:GS.btnK},"💬 카카오톡 오픈채팅 입장하기"))
+        React.createElement("a",{href:(function(){var d=DATES.find(function(x){return x.id===form.d;});return d&&d.kakao?d.kakao:"https://open.kakao.com/o/gJdZPKxi";}()),target:"_blank",rel:"noopener noreferrer"},React.createElement("button",{style:GS.btnK},"💬 카카오톡 오픈채팅 입장하기"))
       ),
 
-      tab==="admin" && authed && React.createElement("div",null,
+      tab==="mypage" && React.createElement("div",null,
+      React.createElement("div",{style:{marginBottom:20}},
+        React.createElement("div",{style:{fontSize:10,color:"#bbb",letterSpacing:3,fontWeight:700,marginBottom:4}},"MY BOOKING"),
+        React.createElement("div",{style:{fontSize:24,fontWeight:900,color:"#111"}},"내 신청 내역")
+      ),
+      React.createElement("div",{style:{display:"flex",gap:8,marginBottom:14}},
+        React.createElement("input",{className:"fi",placeholder:"전화번호로 조회",value:myPhone,onChange:function(e){setMyPhone(e.target.value);},inputMode:"numeric",style:{flex:1}}),
+        React.createElement("button",{onClick:function(){
+          if(!myPhone){setMyErr("전화번호를 입력해주세요.");return;}
+          setMyLoading(true);setMyErr("");setMyMsg("");
+          fetch(SUPA_URL+"/rest/v1/"+TABLE+"?phone=eq."+myPhone.replace(/[^0-9]/g,"")+"&order=created_at.desc",{headers:hdrs()}).then(function(r){return r.json();}).then(function(r){setMyRows(r);setMyLoading(false);if(r.length===0)setMyErr("내역이 없어요.");}).catch(function(e){setMyErr("조회 실패: "+e.message);setMyLoading(false);});
+        },style:{background:"#111",color:"#fff",border:"none",padding:"0 18px",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}},"조회")
+      ),
+      myErr && React.createElement("div",{style:{background:"#fef2f2",border:"1px solid #fecaca",color:"#ef4444",borderRadius:10,padding:"10px 14px",fontSize:13,marginBottom:12}},myErr),
+      myMsg && React.createElement("div",{style:{background:"#f0fdf4",border:"1px solid #bbf7d0",color:"#16a34a",borderRadius:10,padding:"10px 14px",fontSize:13,marginBottom:12}},myMsg),
+      myLoading && React.createElement("div",{style:{textAlign:"center",padding:30,color:"#bbb"}},"조회 중..."),
+      myRows.length>0 && React.createElement("div",null,
+        myRows.map(function(r){
+          var d=DATES.find(function(x){return x.id===r.selected_date;})||{};
+          return React.createElement("div",{key:r.id,style:{background:r.status==="cancelled"?"#fafafa":"#fff",border:"1px solid "+(r.status==="cancelled"?"#f0f0f0":"#e8e8e8"),borderRadius:14,padding:"16px",marginBottom:10,opacity:r.status==="cancelled"?0.6:1}},
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+              React.createElement("div",null,
+                React.createElement("div",{style:{fontSize:15,fontWeight:800,color:r.status==="cancelled"?"#bbb":"#111",textDecoration:r.status==="cancelled"?"line-through":"none",marginBottom:3}},d.badge||r.selected_date),
+                React.createElement("div",{style:{fontSize:12,color:"#888"}},(d.date||"")+" "+(d.time||"")),
+                React.createElement("div",{style:{fontSize:11,color:"#bbb",marginTop:2}},(r.apply_year||new Date(r.created_at).getFullYear())+"년")
+              ),
+              r.status==="cancelled"
+                ? React.createElement("span",{style:{fontSize:11,fontWeight:700,color:"#bbb",background:"#f5f5f5",borderRadius:8,padding:"6px 10px"}},"취소됨")
+                : React.createElement("button",{onClick:function(){
+                    if(!window.confirm("신청을 취소할까요?"))return;
+                    fetch(SUPA_URL+"/rest/v1/"+TABLE+"?id=eq."+r.id,{method:"PATCH",headers:Object.assign({},hdrs(),{"Prefer":"return=representation"}),body:JSON.stringify({status:"cancelled"})}).then(function(){setMyRows(myRows.map(function(x){return x.id===r.id?Object.assign({},x,{status:"cancelled"}):x;}));setMyMsg("취소됐어요.");}).catch(function(e){setMyErr("취소 실패: "+e.message);});
+                  },style:{background:"#fef2f2",border:"1px solid #fecaca",color:"#ef4444",borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}},"취소")
+            )
+          );
+        })
+      )
+    ),
+    tab==="admin" && authed && React.createElement("div",null,
         React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:8}},
           React.createElement("div",{style:Object.assign({},GS.sl,{margin:0})},"🗂️ 신청자 현황"),
           React.createElement("div",{style:{display:"flex",gap:7}},
@@ -422,7 +475,14 @@ function App(){
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:11}},r.budget),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:11}},r.residence),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:11}},r.price_range),
-                  React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:10,color:"#bbb",whiteSpace:"nowrap"}},new Date(r.created_at).toLocaleDateString("ko-KR"),React.createElement("br"),new Date(r.created_at).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"}))
+                  React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:10,color:"#bbb",whiteSpace:"nowrap"}},new Date(r.created_at).toLocaleDateString("ko-KR"),React.createElement("br"),new Date(r.created_at).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})),
+                React.createElement("td",{style:{padding:"9px 10px"}},React.createElement("span",{style:{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:5,background:r.status==="cancelled"?"#f5f5f5":"#f0fdf4",color:r.status==="cancelled"?"#bbb":"#16a34a"}},r.status==="cancelled"?"취소":"정상")),
+                React.createElement("td",{style:{padding:"9px 10px",fontSize:11,fontWeight:700,color:"#888",whiteSpace:"nowrap"}},r.apply_year||new Date(r.created_at).getFullYear(),"년"),
+                React.createElement("td",{style:{padding:"9px 10px",whiteSpace:"nowrap"}},
+                  r.status==="cancelled"
+                    ? React.createElement("button",{onClick:function(){fetch(SUPA_URL+"/rest/v1/"+TABLE+"?id=eq."+r.id,{method:"PATCH",headers:Object.assign({},hdrs(),{"Prefer":"return=representation"}),body:JSON.stringify({status:"active"})}).then(function(){load();});},style:{background:"#f0fdf4",border:"1px solid #bbf7d0",color:"#16a34a",borderRadius:6,padding:"4px 8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"inherit"}},"복구")
+                    : React.createElement("button",{onClick:function(){if(!window.confirm(r.nickname+"님 취소?"))return;fetch(SUPA_URL+"/rest/v1/"+TABLE+"?id=eq."+r.id,{method:"PATCH",headers:Object.assign({},hdrs(),{"Prefer":"return=representation"}),body:JSON.stringify({status:"cancelled"})}).then(function(){load();});},style:{background:"#fef2f2",border:"1px solid #fecaca",color:"#ef4444",borderRadius:6,padding:"4px 8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"inherit"}},"취소")
+                )
                 );
               })
             )
@@ -441,6 +501,11 @@ function Root(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 })();
+
+
+
+
+
 
 </script>
 </body>
