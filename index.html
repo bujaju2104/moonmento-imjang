@@ -26,6 +26,7 @@ window.AFTER_SRC="data:image/jpeg;base64,/9j/4QEfRXhpZgAATU0AKgAAAAgABQEAAAMAAAA
 
 
 
+
 (function(){
 var useState=React.useState, useCallback=React.useCallback, createElement=React.createElement;
 
@@ -395,7 +396,7 @@ function App(){
             else{var el=document.createElement("textarea");el.value=txt;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(function(){setCopied(false);},2000);}
           },style:{width:"100%",marginTop:10,background:copied?"#111":"#f5f0e8",border:"none",color:copied?"#fff":GA,padding:"11px",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"inherit",transition:"all .2s"}},copied?"✓ 복사됨":"계좌번호 복사")
         ),
-        React.createElement("a",{href:(function(){var d=DATES.find(function(x){return x.id===form.d;});return d&&d.kakao?d.kakao:"https://open.kakao.com/o/gJdZPKxi";}()),target:"_blank",rel:"noopener noreferrer"},React.createElement("button",{style:GS.btnK},"💬 카카오톡 오픈채팅 입장하기"))
+        React.createElement("a",{href:(function(){var d=DATES.find(function(x){return x.id===form.d;});return d&&d.kakao?d.kakao:"https://open.kakao.com/o/gJdZPKxi";}()),target:"_blank",rel:"noopener noreferrer"},React.createElement("button",{style:GS.btnK},"💬 "+(form.d==="afternoon"?"오후 2시 임장 입장하기":"저녁 6시반 임장 입장하기")))
       ),
 
       tab==="mypage" && React.createElement("div",null,
@@ -511,6 +512,7 @@ function Root(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 })();
+
 
 
 
