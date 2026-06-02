@@ -22,6 +22,10 @@ window.AFTER_SRC="data:image/jpeg;base64,/9j/4QEfRXhpZgAATU0AKgAAAAgABQEAAAMAAAA
 
 
 
+
+
+
+
 (function(){
 var useState=React.useState, useCallback=React.useCallback, createElement=React.createElement;
 
@@ -236,7 +240,7 @@ function App(){
         React.createElement("div",{style:{fontSize:30,marginBottom:10}},"🔐"),
         React.createElement("div",{style:{fontSize:17,fontWeight:800,color:"#111",marginBottom:4}},"관리자 인증"),
         React.createElement("div",{style:{fontSize:13,color:"#aaa",marginBottom:16}},"신청 현황은 관리자만 열람 가능해요"),
-        React.createElement("input",{type:"password",placeholder:"비밀번호 4자리",value:pw,onChange:function(e){setPw(e.target.value);},onKeyDown:function(e){if(e.key==="Enter")checkPw();},inputMode:"numeric",maxLength:4,style:Object.assign({},GS.fi,{marginBottom:8,textAlign:"center",fontSize:22,letterSpacing:8})}),
+        React.createElement("input",{type:"password",placeholder:"비밀번호 4자리",value:pw,onChange:function(e){setPw(e.target.value);},onKeyDown:function(e){if(e.key==="Enter")checkPw();},inputMode:"numeric",maxLength:4,style:{background:"#f5f4f0",border:"1.5px solid #e0e0e0",borderRadius:12,padding:"14px 16px",fontFamily:"inherit",fontSize:28,color:"#111",width:"100%",height:60,boxSizing:"border-box",outline:"none",textAlign:"center",letterSpacing:12,marginBottom:8,display:"block"}}),
         pwErr && React.createElement("div",{style:{color:"#c03030",fontSize:13,marginBottom:8}},pwErr),
         React.createElement("button",{onClick:checkPw,style:Object.assign({},GS.btnG,{marginBottom:8})},"확인"),
         React.createElement("button",{onClick:function(){setShowPw(false);setPwErr("");setPw("");},style:{background:"none",border:"none",color:"#bbb",fontSize:13,cursor:"pointer",width:"100%",fontFamily:"inherit"}},"취소")
@@ -383,7 +387,13 @@ function App(){
             React.createElement("div",null,"💰 참가비 ",React.createElement("strong",{style:{color:GA,fontSize:17}},"5만원")),
             React.createElement("div",null,"🏦 "+ACCT),
             React.createElement("div",null,"📌 입금자명: ",React.createElement("strong",null,form.nick))
-          )
+          ),
+          React.createElement("button",{onClick:function(e){
+            e.stopPropagation();
+            var txt="1002030508460";
+            if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){setCopied(true);setTimeout(function(){setCopied(false);},2000);}).catch(function(){var el=document.createElement("textarea");el.value=txt;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(function(){setCopied(false);},2000);});}
+            else{var el=document.createElement("textarea");el.value=txt;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(function(){setCopied(false);},2000);}
+          },style:{width:"100%",marginTop:10,background:copied?"#111":"#f5f0e8",border:"none",color:copied?"#fff":GA,padding:"11px",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"inherit",transition:"all .2s"}},copied?"✓ 복사됨":"계좌번호 복사")
         ),
         React.createElement("a",{href:(function(){var d=DATES.find(function(x){return x.id===form.d;});return d&&d.kakao?d.kakao:"https://open.kakao.com/o/gJdZPKxi";}()),target:"_blank",rel:"noopener noreferrer"},React.createElement("button",{style:GS.btnK},"💬 카카오톡 오픈채팅 입장하기"))
       ),
@@ -501,6 +511,10 @@ function Root(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 })();
+
+
+
+
 
 
 
