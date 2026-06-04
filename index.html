@@ -27,6 +27,9 @@ window.AFTER_SRC="data:image/jpeg;base64,/9j/4QEfRXhpZgAATU0AKgAAAAgABQEAAAMAAAA
 
 
 
+
+
+
 (function(){
 var useState=React.useState, useCallback=React.useCallback, createElement=React.createElement;
 
@@ -48,7 +51,7 @@ var DATES=[
   {id:"afternoon",date:"6월 13일(토)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#3a7c6f",kakao:"https://open.kakao.com/o/gJdZPKxi"},
   {id:"evening",date:"6월 13일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/gmHYTKxi"}
 ];
-var AREAS=["신당8구역","신당9구역","신당10구역","신당13구역","전체 비교","미정"];
+var AREAS=["신당8구역","신당9구역","신당10구역","신당13구역","전체 비교","미정","기타"];
 var BUDGETS=["5천만원 미만","5천~1억","1억~3억","3억~5억","5억~10억","10억 이상"];
 var REGIONS=["서울 강북권","서울 강남권","서울 기타","경기/인천","지방","해외"];
 var PRICES=["3억 미만","3억~5억","5억~8억","8억~12억","12억~15억","15억 이상"];
@@ -187,7 +190,7 @@ function App(){
   var s13=useState(0),total=s13[0],setTotal=s13[1];
   var s14=useState(""),search=s14[0],setSearch=s14[1];
   var s15=useState("all"),filt=s15[0],setFilt=s15[1];
-  var s16=useState({d:"",nick:"",phone:"",area:"",age:"",budget:"",region:"",price:"",agree:false}),form=s16[0],setForm=s16[1];
+  var s16=useState({d:"",nick:"",phone:"",area:"",areaEtc:"",age:"",budget:"",region:"",price:"",agree:false}),form=s16[0],setForm=s16[1];
   var s17=useState(""),myPhone=s17[0],setMyPhone=s17[1];var s18=useState([]),myRows=s18[0],setMyRows=s18[1];var s19=useState(false),myLoading=s19[0],setMyLoading=s19[1];var s20=useState(""),myErr=s20[0],setMyErr=s20[1];var s21=useState(""),myMsg=s21[0],setMyMsg=s21[1];
   var s17=useState(""),myPhone=s17[0],setMyPhone=s17[1];
   var s18=useState([]),myRows=s18[0],setMyRows=s18[1];
@@ -221,7 +224,7 @@ function App(){
   }
 
   var filtered=rows.filter(function(r){return filt==="all"||r.selected_date===filt;}).filter(function(r){return !search||r.nickname&&r.nickname.includes(search)||r.area&&r.area.includes(search)||r.phone&&r.phone.includes(search);});
-  var dCnt={};DATES.forEach(function(d){dCnt[d.id]=rows.filter(function(r){return r.selected_date===d.id;}).length;});
+  var dCnt={};DATES.forEach(function(d){dCnt[d.id]=rows.filter(function(r){return r.selected_date===d.id&&r.status!=="cancelled";}).length;});
 
   function exportCsv(){
     var h=["#","닉네임","전화","일정","연령","구역","투자","거주","희망가","일시"];
@@ -512,6 +515,9 @@ function Root(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 })();
+
+
+
 
 
 
