@@ -30,10 +30,6 @@ window.AFTER_SRC="data:image/jpeg;base64,/9j/4QEfRXhpZgAATU0AKgAAAAgABQEAAAMAAAA
 
 
 
-
-
-
-
 (function(){
 var useState=React.useState, useCallback=React.useCallback, createElement=React.createElement;
 
@@ -52,9 +48,8 @@ function dbSelect(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?order=created_at.d
 function dbCount(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?select=count",{headers:Object.assign({},hdrs(),{"Prefer":"count=exact","Range-Unit":"items","Range":"0-0"})}).then(function(r){return parseInt((r.headers.get("content-range")||"0/0").split("/")[1]||"0");});}
 
 var DATES=[
-  {id:"afternoon",date:"6월 13일(토)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#aaa",kakao:"https://open.kakao.com/o/gJdZPKxi",closed:true},
-  {id:"evening",date:"6월 13일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#aaa",kakao:"https://open.kakao.com/o/gmHYTKxi",closed:true},
-  {id:"evening21",date:"6월 21일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/ge68ZFzi",closed:false}
+  {id:"afternoon",date:"6월 13일(토)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#3a7c6f",kakao:"https://open.kakao.com/o/gJdZPKxi"},
+  {id:"evening",date:"6월 13일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/gmHYTKxi"}
 ];
 var AREAS=["신당8구역","신당9구역","신당10구역","신당13구역","전체 비교","미정","기타"];
 var BUDGETS=["5천만원 미만","5천~1억","1억~3억","3억~5억","5억~10억","10억 이상"];
@@ -288,7 +283,7 @@ function App(){
             ),
             React.createElement("tbody",null,
               DATES.map(function(d,i){return React.createElement("tr",{key:d.id,style:{background:i%2===0?"#fff":"#fdfcfa"}},
-                React.createElement("td",{style:{padding:"12px 14px",borderBottom:"1px solid #f5f5f5"}},React.createElement("span",{style:{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:10,display:"inline-block",background:d.closed?"#f0f0f0":d.acc+"18",color:d.closed?"#bbb":d.acc}},d.closed?"🔒 마감":d.badge)),
+                React.createElement("td",{style:{padding:"12px 14px",borderBottom:"1px solid #f5f5f5"}},React.createElement("span",{style:{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:10,display:"inline-block",background:d.acc+"18",color:d.acc}},d.badge)),
                 React.createElement("td",{style:{padding:"12px 14px",fontSize:14,fontWeight:700,color:"#111",borderBottom:"1px solid #f5f5f5"}},d.date),
                 React.createElement("td",{style:{padding:"12px 14px",fontSize:14,color:"#666",borderBottom:"1px solid #f5f5f5"}},d.time)
               );})
@@ -330,14 +325,14 @@ function App(){
         err && React.createElement("div",{style:{background:"#fff0f0",border:"1.5px solid #f08080",color:"#c03030",borderRadius:10,padding:"12px 16px",fontSize:14,marginBottom:14}},"❌ "+err),
         React.createElement("div",{style:{marginBottom:22}},
           React.createElement("div",{style:{fontSize:15,fontWeight:700,color:"#333",marginBottom:12}},"🗓️ 참가 일정 ",React.createElement("span",{style:{color:GA}},"*")),
-          DATES.map(function(d){return React.createElement("div",{key:d.id,style:Object.assign({},GS.card,form.d===d.id?GS.cardOn:{},form.d===d.id?{borderLeftColor:d.acc}:{},d.closed?{opacity:0.45,cursor:"not-allowed"}:{}),onClick:function(){if(!d.closed)set("d",d.id);}},
+          DATES.map(function(d){return React.createElement("div",{key:d.id,style:Object.assign({},GS.card,form.d===d.id?GS.cardOn:{},form.d===d.id?{borderLeftColor:d.acc}:{}),onClick:function(){set("d",d.id);}},
             React.createElement("div",{style:{display:"flex",alignItems:"center",gap:14}},
               React.createElement("div",{style:{width:20,height:20,borderRadius:"50%",border:"2.5px solid "+(form.d===d.id?d.acc:"#d0d0d0"),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
                 form.d===d.id && React.createElement("div",{style:{width:9,height:9,borderRadius:"50%",background:d.acc}})
               ),
               React.createElement("div",null,
                 React.createElement("div",{style:{display:"flex",alignItems:"center",gap:7,marginBottom:2}},
-                  React.createElement("span",{style:{fontSize:16,fontWeight:700,color:d.closed?"#aaa":"#111"}},d.date),
+                  React.createElement("span",{style:{fontSize:16,fontWeight:700,color:"#111"}},d.date),
                   React.createElement("span",{style:{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:10,display:"inline-block",background:d.acc+"18",color:d.acc}},d.badge)
                 ),
                 React.createElement("div",{style:{fontSize:14,color:"#888"}},d.time)
@@ -429,7 +424,7 @@ function App(){
           return React.createElement("div",{key:r.id,style:{background:r.status==="cancelled"?"#fafafa":"#fff",border:"1px solid "+(r.status==="cancelled"?"#f0f0f0":"#e8e8e8"),borderRadius:14,padding:"16px",marginBottom:10,opacity:r.status==="cancelled"?0.6:1}},
             React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
               React.createElement("div",null,
-                React.createElement("div",{style:{fontSize:15,fontWeight:800,color:r.status==="cancelled"?"#bbb":"#111",textDecoration:r.status==="cancelled"?"line-through":"none",fontWeight:r.status==="cancelled"?400:700,marginBottom:3}},d.badge||r.selected_date),
+                React.createElement("div",{style:{fontSize:15,fontWeight:800,color:r.status==="cancelled"?"#bbb":"#111",textDecoration:r.status==="cancelled"?"line-through":"none",marginBottom:3}},d.badge||r.selected_date),
                 React.createElement("div",{style:{fontSize:12,color:"#888"}},(d.date||"")+" "+(d.time||"")),
                 React.createElement("div",{style:{fontSize:11,color:"#bbb",marginTop:2}},(r.apply_year||new Date(r.created_at).getFullYear())+"년")
               ),
@@ -487,7 +482,7 @@ function App(){
                 return React.createElement("tr",{key:r.id},
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",color:"#ccc"}},filtered.length-i),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5"}},React.createElement("strong",{style:{color:"#111"}},r.nickname)),
-                  React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5"}},React.createElement("a",{href:"tel:"+r.phone,style:{color:r.status==="cancelled"?"#bbb":"#b5863a",fontWeight:600,textDecoration:"none"}},r.phone)),
+                  React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5"}},React.createElement("a",{href:"tel:"+r.phone,style:{color:GA,fontWeight:600,textDecoration:"none"}},r.phone)),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5"}},d&&React.createElement("span",{style:{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8,display:"inline-block",background:d.acc+"18",color:d.acc}},d.badge),React.createElement("div",{style:{fontSize:10,color:"#bbb"}},d&&d.date)),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5",fontSize:11}},r.age_group),
                   React.createElement("td",{style:{padding:"9px 10px",borderBottom:"1px solid #f5f5f5"}},React.createElement("span",{style:{background:"#fff8ee",color:GA,padding:"2px 7px",borderRadius:7,fontSize:11,fontWeight:700}},r.area)),
@@ -520,10 +515,6 @@ function Root(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 })();
-
-
-
-
 
 
 
