@@ -52,8 +52,9 @@ function dbSelect(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?order=created_at.d
 function dbCount(){return fetch(SUPA_URL+"/rest/v1/"+TABLE+"?select=count",{headers:Object.assign({},hdrs(),{"Prefer":"count=exact","Range-Unit":"items","Range":"0-0"})}).then(function(r){return parseInt((r.headers.get("content-range")||"0/0").split("/")[1]||"0");});}
 
 var DATES=[
-  {id:"evening0704",date:"7월 4일(토)",time:"저녁 6시 30분 ~ 9시 30분",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/pPKtDHp",closed:false},
-  {id:"afternoon0716",date:"7월 16일(목)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/pPKtDHp",closed:false}
+  {id:"afternoon",date:"6월 13일(토)",time:"오후 2시 ~ 5시",badge:"오후 임장",acc:"#aaa",kakao:"https://open.kakao.com/o/gJdZPKxi",closed:true},
+  {id:"evening",date:"6월 13일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#aaa",kakao:"https://open.kakao.com/o/gmHYTKxi",closed:true},
+  {id:"evening21",date:"6월 21일(토)",time:"저녁 6시 30분 ~ 9시",badge:"저녁 임장",acc:"#b5863a",kakao:"https://open.kakao.com/o/ge68ZFzi",closed:false}
 ];
 var AREAS=["신당8구역","신당9구역","신당10구역","신당13구역","전체 비교","미정","기타"];
 var BUDGETS=["5천만원 미만","5천~1억","1억~3억","3억~5억","5억~10억","10억 이상"];
